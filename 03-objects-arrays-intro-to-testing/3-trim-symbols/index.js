@@ -14,8 +14,8 @@ export function trimSymbols(string, size) {
   let equalSymbolsCount = 1;
 
   return symbolsAsArray.reduce((acc, currentSymbol, index, array) => {
-    const nextValue = array[index + 1];
-    const isSymbolsEqual = currentSymbol === nextValue;
+    const nextSymbol = array[index + 1];
+    const isSymbolsEqual = currentSymbol === nextSymbol;
     const outOfSize = equalSymbolsCount >= size;
 
     if (isSymbolsEqual && outOfSize) {
