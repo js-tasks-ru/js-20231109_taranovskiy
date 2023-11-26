@@ -32,6 +32,7 @@ export default class ColumnChart {
 
   update(newData) {
     this.data = newData;
+    this.remove();
     this.render();
   }
 
