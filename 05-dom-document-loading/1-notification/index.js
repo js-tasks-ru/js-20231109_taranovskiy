@@ -1,22 +1,13 @@
-let instance = null;
-
 export default class NotificationMessage {
+  static shownNotification = null;
   _element;
-  #isNotificationShown = false;
 
   constructor(message = '', { duration = 1000, type = 'success' } = {}) {
-    const self = instance ?? this;
+    this.message = message;
+    this.duration = duration;
+    this.type = type;
 
-    self.message = message;
-    self.duration = duration;
-    self.type = type;
-
-    if (!instance || (instance && !instance.#isNotificationShown)) {
-      self.render();
-    }
-
-    instance = self;
-    return self;
+    this.render();
   }
 
   get element() {
@@ -43,20 +34,18 @@ export default class NotificationMessage {
     `;
   }
 
-  show(targetElement) {
-    if (this.#isNotificationShown) {
-      this.destroy();
-      this.render();
+  setShownNotification() {
+    if (NotificationMessage.shownNotification) {
+      NotificationMessage.shownNotification.destroy();
     }
+    NotificationMessage.shownNotification = this;
+  }
 
-    (targetElement ?? document.body).append(this._element);
+  show(targetElement = document.body) {
+    this.setShownNotification();
+    targetElement.append(this._element);
 
-    this.#isNotificationShown = true;
-
-    this.timer = setTimeout(() => {
-      this.destroy();
-      this.#isNotificationShown = false;
-    }, this.duration);
+    this.timer = setTimeout(() => this.destroy(), this.duration);
   }
 
   get durationInSeconds() {
