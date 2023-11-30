@@ -5,7 +5,7 @@ export default class SortableTable {
     this.headerConfig = headerConfig;
     this.data = data;
 
-    this.render();
+    this.createElement();
   }
 
   get element() {
@@ -20,7 +20,7 @@ export default class SortableTable {
     }, {});
   }
 
-  render() {
+  createElement() {
     const element = document.createElement('div');
     element.innerHTML = this.createTemplate();
 
