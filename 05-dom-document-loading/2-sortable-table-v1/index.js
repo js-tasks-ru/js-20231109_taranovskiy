@@ -76,19 +76,16 @@ export default class SortableTable {
   }
 
   sortData(field, order) {
-    const sortedData = [...this.data];
     const sortType = this.headerConfig.find(({id}) => id === field).sortType;
 
-    return sortedData.sort((a, b) => {
-      switch (sortType) {
-      case 'string':
-        return SortableTable.compareSymbols(a[field], b[field], order);
-      case 'number':
-        return SortableTable.compareNumbers(a[field], b[field], order);
-      default:
-        return 0;
-      }
-    });
+    switch (sortType) {
+    case 'string':
+      return SortableTable.sortBySymbols(this.data, field, order);
+    case 'number':
+      return SortableTable.sortByNumbers(this.data, field, order);
+    default:
+      return this.data;
+    }
   }
 
   sort(field, order) {
@@ -104,13 +101,17 @@ export default class SortableTable {
     this.remove();
   }
 
-  static compareSymbols(a, b, order) {
+  static sortBySymbols(data, field, order) {
+    const dataClone = [...data];
     const collator = new Intl.Collator(['ru', 'en'], { caseFirst: 'upper' });
-    return order === 'asc' ? collator.compare(a, b) : collator.compare(b, a);
+    const compare = (a, b) => order === 'asc' ? collator.compare(a, b) : collator.compare(b, a);
+    return dataClone.sort((a, b) => compare(a[field], b[field]));
   }
 
-  static compareNumbers(a, b, order) {
-    return order === 'asc' ? a - b : b - a;
+  static sortByNumbers(data, field, order) {
+    const dataClone = [...data];
+    const compare = (a, b) => order === 'asc' ? a - b : b - a;
+    return dataClone.sort((a, b) => compare(a[field], b[field]));
   }
 }
 
