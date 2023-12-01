@@ -75,21 +75,8 @@ export default class SortableTable {
     `;
   }
 
-  sortData(field, order) {
-    const sortType = this.headerConfig.find(({id}) => id === field).sortType;
-
-    switch (sortType) {
-    case 'string':
-      return SortableTable.sortBySymbols(this.data, field, order);
-    case 'number':
-      return SortableTable.sortByNumbers(this.data, field, order);
-    default:
-      return this.data;
-    }
-  }
-
   sort(field, order) {
-    this.data = this.sortData(field, order);
+    this.data = SortableTable.sortData(this.headerConfig, this.data, field, order);
     this.subElements.body.innerHTML = this.createBodyTemplate();
   }
 
@@ -99,6 +86,19 @@ export default class SortableTable {
 
   destroy() {
     this.remove();
+  }
+
+  static sortData(headerConfig, data, field, order) {
+    const sortType = headerConfig.find(({id}) => id === field).sortType;
+
+    switch (sortType) {
+    case 'string':
+      return SortableTable.sortBySymbols(data, field, order);
+    case 'number':
+      return SortableTable.sortByNumbers(data, field, order);
+    default:
+      return data;
+    }
   }
 
   static sortBySymbols(data, field, order) {
