@@ -5,7 +5,7 @@ export default class SortableTable {
     this.headerConfig = headerConfig;
     this.data = data;
 
-    this.render();
+    this.createElement();
   }
 
   get element() {
@@ -20,7 +20,7 @@ export default class SortableTable {
     }, {});
   }
 
-  render() {
+  createElement() {
     const element = document.createElement('div');
     element.innerHTML = this.createTemplate();
 
@@ -75,24 +75,8 @@ export default class SortableTable {
     `;
   }
 
-  sortData(field, order) {
-    const sortedData = [...this.data];
-    const sortType = this.headerConfig.find(({id}) => id === field).sortType;
-
-    return sortedData.sort((a, b) => {
-      switch (sortType) {
-      case 'string':
-        return SortableTable.compareSymbols(a[field], b[field], order);
-      case 'number':
-        return SortableTable.compareNumbers(a[field], b[field], order);
-      default:
-        return 0;
-      }
-    });
-  }
-
   sort(field, order) {
-    this.data = this.sortData(field, order);
+    this.data = SortableTable.sortData(this.headerConfig, this.data, field, order);
     this.subElements.body.innerHTML = this.createBodyTemplate();
   }
 
@@ -104,13 +88,30 @@ export default class SortableTable {
     this.remove();
   }
 
-  static compareSymbols(a, b, order) {
-    const collator = new Intl.Collator(['ru', 'en'], { caseFirst: 'upper' });
-    return order === 'asc' ? collator.compare(a, b) : collator.compare(b, a);
+  static sortData(headerConfig, data, field, order) {
+    const sortType = headerConfig.find(({id}) => id === field).sortType;
+
+    switch (sortType) {
+    case 'string':
+      return SortableTable.sortBySymbols(data, field, order);
+    case 'number':
+      return SortableTable.sortByNumbers(data, field, order);
+    default:
+      return data;
+    }
   }
 
-  static compareNumbers(a, b, order) {
-    return order === 'asc' ? a - b : b - a;
+  static sortBySymbols(data, field, order) {
+    const dataClone = [...data];
+    const collator = new Intl.Collator(['ru', 'en'], { caseFirst: 'upper' });
+    const compare = (a, b) => order === 'asc' ? collator.compare(a, b) : collator.compare(b, a);
+    return dataClone.sort((a, b) => compare(a[field], b[field]));
+  }
+
+  static sortByNumbers(data, field, order) {
+    const dataClone = [...data];
+    const compare = (a, b) => order === 'asc' ? a - b : b - a;
+    return dataClone.sort((a, b) => compare(a[field], b[field]));
   }
 }
 
