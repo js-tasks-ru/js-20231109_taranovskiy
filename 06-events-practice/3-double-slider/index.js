@@ -6,8 +6,8 @@ export default class DoubleSlider {
     max = 200,
     formatValue = value => '$' + value,
     selected: {
-      from = 120,
-      to = 150,
+      from,
+      to,
     } = {}
   } = {}) {
     this.min = min;
@@ -32,23 +32,21 @@ export default class DoubleSlider {
 
   get formattedValue() {
     return {
-      min: this.formatValue(this.min),
-      max: this.formatValue(this.max),
-      selectedFrom: this.formatValue(this.selected.from),
-      selectedTo: this.formatValue(this.selected.to),
+      from: this.selected.from ? this.formatValue(this.selected.from) : this.formatValue(this.min),
+      to: this.selected.to ? this.formatValue(this.selected.to) : this.formatValue(this.max),
     };
   }
 
   createTemplate() {
     return `
       <div class="range-slider">
-        <span>${this.formattedValue.min}</span>
+        <span data-element="from">${this.formattedValue.from}</span>
         <div class="range-slider__inner">
           <span class="range-slider__progress"></span>
           <span class="range-slider__thumb-left"></span>
           <span class="range-slider__thumb-right"></span>
         </div>
-        <span>${this.formattedValue.max}</span>
+        <span data-element="to">${this.formattedValue.to}</span>
       </div>
     `;
   }
